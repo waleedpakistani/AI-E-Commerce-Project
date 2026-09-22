@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: ai-ecommerce-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: ai_ecommerce_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai-ecommerce-redis
+    ports:
+      - "6380:6379"
+
+  backend:
+    image: ai-ecommerce-backend:latest
+    container_name: ai-ecommerce-backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: yourpassword
+      DATABASE_NAME: ai_ecommerce_db
+      DATABASE_URL: postgres://postgres:yourpassword@postgres:5432/ai_ecommerce_db
+      JWT_SECRET: super-secret-jwt-key-change-in-production
+      JWT_EXPIRES_IN: 1d
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    image: ai-ecommerce-frontend:latest
+    container_name: ai-ecommerce-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

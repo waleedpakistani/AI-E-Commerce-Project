@@ -35,6 +35,6 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ./backend
+          context: .
           push: false
           tags: ai-ecommerce-backend:latest
